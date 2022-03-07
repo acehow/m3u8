@@ -28,6 +28,10 @@ func main() {
 		panic("can't find config.json !")
 	}
 	defer file.Close()
+	size := false
+	if len(os.Args) > 1 {
+		size = true
+	}
 	decoder := json.NewDecoder(file)
 	conf := configuration{}
 	err = decoder.Decode(&conf)
@@ -49,6 +53,53 @@ func main() {
 
 	rd := bufio.NewReader(f)
 	i := 1
+	if size {
+		bytenum := 0
+		for {
+			line, err := rd.ReadString('\n') //以'\n'为结束符读入一行
+			if err != nil || io.EOF == err {
+				break
+			}
+			str := strings.Replace(line, "\n", "", -1)
+			if strings.HasSuffix(str, "ts") {
+				if i == 1 {
+					res, err := http.Get(url + str)
+					if err != nil {
+						panic(err)
+					}
+
+					if err != nil {
+						panic(err)
+					}
+
+					key := []byte(keystr)
+					iv := []byte(keystr)
+					body, err := io.ReadAll(res.Body)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+
+					if keystr != "" {
+						result, err := Aes128Decrypt(body, key, iv)
+						if err != nil {
+							fmt.Println(err.Error())
+							return
+						}
+						bytenum = len(result)
+					} else {
+						bytenum = len(body)
+					}
+
+					res.Body.Close()
+				}
+				i++
+			}
+		}
+		fmt.Println(bytenum*i/1024/1024, "M")
+		os.Exit(0)
+	}
+
 	for {
 		line, err := rd.ReadString('\n') //以'\n'为结束符读入一行
 		if err != nil || io.EOF == err {
@@ -58,6 +109,7 @@ func main() {
 		if strings.HasSuffix(str, "ts") {
 			fmt.Println(str)
 			// download ts file
+
 			res, err := http.Get(url + str)
 			if err != nil {
 				panic(err)
@@ -77,7 +129,7 @@ func main() {
 				fmt.Println(err)
 				return
 			}
-			
+
 			if keystr != "" {
 				result, err := Aes128Decrypt(body, key, iv)
 				if err != nil {
@@ -88,7 +140,7 @@ func main() {
 			} else {
 				os.WriteFile(outf+fname+".ts", body, 0666)
 			}
-			
+
 			fmt.Println(fname)
 			//io.Copy(f, res.Body)
 			res.Body.Close()
@@ -96,7 +148,7 @@ func main() {
 		}
 	}
 
-	fmt.Println("success")
+	fmt.Println(`copy /b F:\f\*.ts E:\f\new.ts`)
 }
 
 func Aes128Encrypt(origData, key []byte, IV []byte) ([]byte, error) {
