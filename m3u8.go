@@ -68,10 +68,6 @@ func main() {
 						panic(err)
 					}
 
-					if err != nil {
-						panic(err)
-					}
-
 					key := []byte(keystr)
 					iv := []byte(keystr)
 					body, err := io.ReadAll(res.Body)
@@ -117,10 +113,6 @@ func main() {
 			// set filename
 			s := pad + strconv.Itoa(i)
 			fname := s[len(s)-5:]
-
-			if err != nil {
-				panic(err)
-			}
 
 			key := []byte(keystr)
 			iv := []byte(keystr)
