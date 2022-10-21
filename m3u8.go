@@ -19,6 +19,7 @@ type configuration struct {
 	Outf   string
 	M3u8f  string
 	Keystr string
+	Iv     string
 }
 
 func main() {
@@ -43,6 +44,8 @@ func main() {
 	outf := conf.Outf
 	keystr := conf.Keystr
 	m3u8f := conf.M3u8f
+	//if iv set to 0, create []byte{0,0...}
+	ivstr := conf.Iv
 
 	pad := "00000"
 	f, err := os.Open(m3u8f)
@@ -69,7 +72,11 @@ func main() {
 					}
 
 					key := []byte(keystr)
-					iv := []byte(keystr)
+					iv := []byte{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+					if ivstr !="0"{
+						iv =[]byte(ivstr)
+					}
+					
 					body, err := io.ReadAll(res.Body)
 					if err != nil {
 						fmt.Println(err)
@@ -103,7 +110,7 @@ func main() {
 		}
 		str := strings.Replace(line, "\n", "", -1)
 		if strings.HasSuffix(str, "ts") {
-			fmt.Println(str)
+			fmt.Println(url + str)
 			// download ts file
 
 			res, err := http.Get(url + str)
@@ -115,7 +122,11 @@ func main() {
 			fname := s[len(s)-5:]
 
 			key := []byte(keystr)
-			iv := []byte(keystr)
+			iv := []byte{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+			if ivstr !="0"{
+				iv =[]byte(ivstr)
+			}
+
 			body, err := io.ReadAll(res.Body)
 			if err != nil {
 				fmt.Println(err)

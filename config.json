@@ -1,6 +1,7 @@
 {
-    "url": "https://test.com",
-    "outf": "c:/test/video/",
-    "keystr": "ec76db078fe8eddb",
-    "m3u8f":"c:/test/video/index.m3u8"
+    "url": "https://dash.madou.club/videos/6157b183e181f31760e442b4/",
+    "outf": "c:/wuhao/tmp/video/",
+    "keystr": "1A07eeA14D7C6f37",
+    "iv": "1A07eeA14D7C6f37",
+    "m3u8f":"c:/wuhao/goproject/m3u8/index.m3u8"
 }
